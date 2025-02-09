@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assiduidade | Traquinas </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+       .container {
+    max-width: 600px; /* Reduzindo a largura */
+    margin: auto;
+}
+.table {
+    font-size: 14px; /* Reduzindo o tamanho da fonte */
+}
+.btn-option {
+    width: 45px; /* Diminuindo o tamanho dos botões */
+    font-size: 14px;
+    padding: 5px;
+}
+        .selected-presente {
+            background-color: green !important;
+            color: white;
+        }
+        .selected-falta-i {
+            background-color: red !important;
+            color: white;
+        }
+        .selected-falta-j {
+            background-color: yellow !important;
+            color: black;
+        }
+        .btn-primary {
+            background-color: #004aad;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #003580;
+        }
+        .table td, .table th {
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function selecionarOpcao(atleta_id, status) {
+            let botoes = document.querySelectorAll(`.btn-${atleta_id}`);
+            botoes.forEach(btn => btn.classList.remove("selected-presente", "selected-falta-i", "selected-falta-j"));
+
+            let botaoSelecionado = document.getElementById(`btn-${atleta_id}-${status}`);
+            if (status === "Presente") {
+                botaoSelecionado.classList.add("selected-presente");
+            } else if (status === "Falta I.") {
+                botaoSelecionado.classList.add("selected-falta-i");
+            } else if (status === "Falta J.") {
+                botaoSelecionado.classList.add("selected-falta-j");
+            }
+
+            verificarSelecao();
+        }
+
+        function verificarSelecao() {
+            let totalAtletas = document.querySelectorAll("tbody tr").length;
+            let selecionados = document.querySelectorAll(".selected-presente, .selected-falta-i, .selected-falta-j").length;
+            let botao = document.getElementById("registrar");
+            botao.disabled = !(selecionados === totalAtletas);
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container text-center">
+        <h2>Assiduidade | Traquinas </h2>
+<img src="{{ url_for('static', filename='img/assiduidade.png') }}" alt="Banner" class="img-fluid mx-auto d-block mb-3" style="max-width: 100px;">
+<div class="container text-center">
+    
+    <a href="/logout" class="btn btn-warning float-end">Sair</a>
+
+        <p>Selecione o dia do treino e registe a assiduidade.</p>
+
+        <form method="POST" action="/registrar">
+            <label for="data_treino"><strong>Treino dia:</strong></label>
+            <input type="date" id="data_treino" name="data_treino" class="form-control mb-3" required>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Atleta</th>
+                        <th>Presente</th>
+                        <th>Falta I.</th>
+                        <th>Falta J.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for atleta in atletas %}
+                    <tr>
+                        <td>{{ atleta.nome }}</td>
+                        <td>
+                            <button type="button" id="btn-{{ atleta.id }}-Presente" class="btn btn-option btn-{{ atleta.id }}"
+                                    onclick="selecionarOpcao('{{ atleta.id }}', 'Presente')">
+                                
+                            </button>
+                            <input type="radio" name="assiduidade_{{ atleta.id }}" value="Presente" required hidden>
+                        </td>
+                        <td>
+                            <button type="button" id="btn-{{ atleta.id }}-Falta I." class="btn btn-option btn-{{ atleta.id }}"
+                                    onclick="selecionarOpcao('{{ atleta.id }}', 'Falta I.')">
+                                
+                            </button>
+                            <input type="radio" name="assiduidade_{{ atleta.id }}" value="Falta I." hidden>
+                        </td>
+                        <td>
+                            <button type="button" id="btn-{{ atleta.id }}-Falta J." class="btn btn-option btn-{{ atleta.id }}"
+                                    onclick="selecionarOpcao('{{ atleta.id }}', 'Falta J.')">
+                                
+                            </button>
+                            <input type="radio" name="assiduidade_{{ atleta.id }}" value="Falta J." hidden>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" id="registrar" class="btn btn-primary w-100 mt-3" disabled>Registar Assiduidade</button>
+        </form>
+
+        <a href="/historico" class="btn btn-secondary w-100 mt-3">Ver Histórico</a>
+    </div>
+
+</body>
+</html>
+
